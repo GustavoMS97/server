@@ -27,3 +27,4 @@ require('./routes/authRoutes')(app);
 //Funciona apenas em Produção, em desenvolvimento usa a porta normal.
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
+console.log();
