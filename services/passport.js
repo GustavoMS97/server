@@ -24,16 +24,13 @@ passport.use(
       proxy: true,
       userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
     },
-    (accessToken, refreshToken, profile, done) => {
-      User.findOne({ googleId: profile.id }).then(existingUser => {
-        if (!existingUser) {
-          new User({ googleId: profile.id }).save().then(createdUser => {
-            done(null, createdUser);
-          });
-        } else {
-          done(null, existingUser);
-        }
-      });
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({ googleId: profile.id });
+      if (!existingUser) {
+        const createdUser = await new User({ googleId: profile.id }).save();
+        return done(null, createdUser);
+      }
+      done(null, existingUser);
     }
   )
 );
