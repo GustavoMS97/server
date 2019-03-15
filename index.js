@@ -5,7 +5,14 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 require('./models/User');
+require('./models/Survey');
 require('./services/passport');
+
+//Adicionar no package.json para rodar o webhook: \"npm run webhook\"
+
+mongoose.Promise = global.Promise;
+mongoose.set('useFindAndModify', false);
+mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
 const app = express();
 
@@ -19,12 +26,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
-//mongoose.Promise = global.Promise;
-mongoose.set('useFindAndModify', false);
-
 require('./routes/authRoutes')(app);
 require('./routes/billingRoutes')(app);
+require('./routes/surveyRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
   //Express will serve up production assets
@@ -35,7 +39,6 @@ if (process.env.NODE_ENV === 'production') {
   const path = require('path');
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-
   });
 }
 
@@ -43,5 +46,3 @@ if (process.env.NODE_ENV === 'production') {
 //Funciona apenas em Produção, em desenvolvimento usa a porta normal.
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
-
-console.log();
